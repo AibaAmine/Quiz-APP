@@ -11,6 +11,15 @@ class Like(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = "likes"
+        unique_together = ('user', 'quiz')  # A user can like a quiz only once
+        
+class Dislike(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="quiz_dislikes")
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="dislikes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'dislikes'
+        unique_together = ('user', 'quiz')  # A user can like a quiz only once
     
 class Comment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="comments")
@@ -20,13 +29,13 @@ class Comment(models.Model):
     class Meta:
         db_table = "comments"
     
-class Rating(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="ratings")
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="ratings")
-    rating = models.PositiveIntegerField()
+class CommentLike(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='comment_likes')
+    comment = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='c_likes')
+    created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
-        db_table = "ratings"
-    
+        db_table = 'comment-likes'
+        unique_together = ('user', 'comment')  # A user can like a comment only once
 
 class Follower(models.Model):
     follower = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="following")
