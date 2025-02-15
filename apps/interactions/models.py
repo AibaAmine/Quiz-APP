@@ -37,16 +37,7 @@ class CommentLike(models.Model):
         db_table = 'comment-likes'
         unique_together = ('user', 'comment')  # A user can like a comment only once
 
-class Follower(models.Model):
-    follower = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="following")
-    following = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="followers")
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-         db_table = "followers"
-         unique_together = ('follower', 'following')  # Prevents duplicate follows
-
-        
+     
 
 
 

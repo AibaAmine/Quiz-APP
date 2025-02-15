@@ -12,7 +12,8 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = '__all__'
-        
+
+#todo define new quiz serializer for home page       
 class QuizSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()  # Show username instead of ID
     questions = QuestionSerializer(many=True, read_only=True)  # Nested questions
