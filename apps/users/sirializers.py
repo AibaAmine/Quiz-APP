@@ -1,3 +1,4 @@
+from apps.users.models import Follower
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -25,3 +26,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','username','email','role']
+        
+        
+class FollowerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follower
+        fields = ['follower', 'following', 'created_at']
+        read_only_fields = ['follower']  # Prevent users from manually setting the follower (you cant setting manually your followers)
+        
+        
+        

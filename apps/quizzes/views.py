@@ -1,7 +1,7 @@
 from apps.quizzes.serializers import QuizSerializer
 from rest_framework import views
 from rest_framework import generics
-from quizzes.models import Quiz
+from apps.quizzes.models import Quiz
 from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
@@ -29,6 +29,9 @@ class QuizDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Quiz.objects.filter(user=self.request.user) #ensure that a user can only retrieve, update, or delete their own quizzes
+
+
+
 
 
 
