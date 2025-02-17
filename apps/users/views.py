@@ -14,6 +14,7 @@ from django.contrib.auth import logout
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
 
 # Create your views here.
 
@@ -74,20 +75,21 @@ class FollowCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         follower = self.request.user
         following_id = self.request.data.get("following") # Get the user to be followed from the request data   #! to access data of the request :'self.request.data'
-        
+        print("following id : ",following_id)
+        print("follower id : ",follower.id)
         if follower.id == int(following_id):
             raise serializers.ValidationError("You cannot follow yourself.")
         
         #check if he allready follow him
         followings = Follower.objects.filter(follower = follower,following_id = following_id)
-        if followings.exists:
+        if followings.exists():
             raise serializers.ValidationError("You are already following this user.")
     
         serializer.save(follower=self.request.user) #follower=self.request.user  this ensure that only logged in user is the follower 
         
 
 #api view to unfollow a user
-class UnfollowDestroyAPIView(generics.DestroyAPIView):
+class UnfollowAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
     def get_object(self): #responsible for retrieving a specific object from the database.
         follower = self.request.user
@@ -98,4 +100,36 @@ class UnfollowDestroyAPIView(generics.DestroyAPIView):
             raise NotFound("You are not following this user.") 
         
          
-         
+# api view to get the logged in user followers list       
+class FollowersListAPIView(generics.ListAPIView):
+    serializer_class = FollowerSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        followers_list = Follower.objects.filter(following = user)
+        
+        return followers_list
+    
+
+#api view to get the logged in user following list 
+class FollowingListAPIView(generics.ListAPIView):
+    serializer_class = FollowerSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        print("user id :", user.id)
+        following_list = Follower.objects.filter(follower = user)
+        return following_list
+
+
+#api view to check if the user follows another user  
+class IsFollowingAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request,user_id):
+        user = self.request.user
+        is_following = Follower.objects.filter(follower = user,following = user_id).exists()
+        return Response("is following = ",is_following)
+    
+    

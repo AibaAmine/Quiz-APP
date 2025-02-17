@@ -5,8 +5,8 @@ from apps.users.models import CustomUser
 
 
 class Quiz(models.Model):
-    
-    class CategoryChoices(models.TextChoices):
+
+    class DifficultyChoices(models.TextChoices):
         EASY = 'Easy'
         MEDIUM = 'Medium'
         HARD = 'Hard'
@@ -14,9 +14,9 @@ class Quiz(models.Model):
     user = models.ForeignKey(CustomUser,models.CASCADE,related_name='quizzes')
     title = models.CharField(max_length=100)
     description = models.TextField()
-    difficulty = models.CharField(max_length=20)
-    category = models.CharField(max_length=20,choices=CategoryChoices.choices,default=CategoryChoices.EASY)
-    sub_category = models.CharField(max_length=20)
+    difficulty = models.CharField(max_length=20,choices=DifficultyChoices,default=DifficultyChoices.EASY)
+    category = models.CharField(max_length=100)
+    #sub_category = models.CharField(max_length=20)
     is_public = models.BooleanField(default=True)
     timer_seconds = models.PositiveIntegerField(null=True,blank=True)
     attempt_limit = models.PositiveIntegerField(null=True,blank=True)
