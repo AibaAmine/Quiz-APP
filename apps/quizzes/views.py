@@ -32,8 +32,8 @@ class FollowedUsersQuizAPIView(generics.ListAPIView):
          user = self.request.user
          
          # following_users = user.following.all()
-         following_users = user.following.values_list("following", flat=True) #.values_list("user", flat=True) → Extracts only the user IDs from the relation as a list.
-
+         following_users = user.following.values_list("following", flat=True) #.values_list("user", flat=True) → Extracts only the user IDs from the relation as a list. 
+         
          return Quiz.objects.filter(user__id__in=following_users) #user__id tells Django to look at the id field of the user ForeignKey.
     
 
@@ -44,8 +44,6 @@ class QuizDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Quiz.objects.filter(user=self.request.user) #ensure that a user can only retrieve, update, or delete their own quizzes
-
-
 
 
 

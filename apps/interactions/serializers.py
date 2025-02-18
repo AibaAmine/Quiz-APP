@@ -5,6 +5,7 @@ class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Like
+        read_only_fields = ['user']  # User should be automatically set
         
         
 class DislikeSerializer(serializers.ModelSerializer):
