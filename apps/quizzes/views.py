@@ -44,7 +44,4 @@ class QuizDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Quiz.objects.filter(user=self.request.user) #ensure that a user can only retrieve, update, or delete their own quizzes
-
-
-
-
+    

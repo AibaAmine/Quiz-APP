@@ -56,3 +56,34 @@ class DislikeAPIView(APIView):
         if deleted:
             return Response({"message": "Dislike removed"}, status=200)
         return Response({"message": "Not disliked before"}, status=400)
+
+
+
+#api view to get likes for a quiz
+
+class LikesForQuizAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request,quiz_id):
+        user = request.user
+        try:
+             quiz = Quiz.objects.get(user = user,id = quiz_id)
+        except Quiz.DoesNotExist:
+             raise NotFound("Quiz not found ")
+        
+        likes_count = Like.objects.filter(quiz = quiz).count()
+        return Response({"likes_count : " : likes_count},status=200)
+    
+    
+#api view to get dislikes for a quiz
+
+class DislikesForQuizAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request,quiz_id):
+        user = request.user
+        try:
+             quiz = Quiz.objects.get(id = quiz_id)
+        except Quiz.DoesNotExist:
+             raise NotFound("Quiz not found ")
+        
+        dislikes_count = Dislike.objects.filter(user = user,quiz = quiz).count()
+        return Response({"dislikes_count : " : dislikes_count},status=200)
