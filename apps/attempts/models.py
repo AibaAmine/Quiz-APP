@@ -2,7 +2,6 @@ from django.db import models
 from apps.users.models import CustomUser
 from apps.quizzes.models import Answer, Question,Quiz
 
-
 # Create your models here.
 
 class QuizAttempt(models.Model):
@@ -20,8 +19,6 @@ class UserResponse(models.Model):
     is_correct = models.BooleanField()
     class Meta:
         db_table = "user_responses"
-
-
 
 
     

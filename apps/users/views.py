@@ -7,6 +7,8 @@ from apps.users.sirializers import FollowerSerializer, UserRegisterSerializer,Us
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from django.contrib.auth import authenticate
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework import status
@@ -42,10 +44,13 @@ class LoginAPIView(generics.GenericAPIView):
         user = authenticate(username=username, password=password)
 
         if user:
-            access_token = AccessToken.for_user(user)  # Generate access token 
+            access_token = AccessToken.for_user(user)# Generate access token
+            refresh_token = RefreshToken.for_user(user)  # Generate refresh token
+        
             return Response({
                 
                 'access': str(access_token),
+                'refresh': str(refresh_token),
             })
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
