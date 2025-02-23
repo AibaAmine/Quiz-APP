@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nb(k_s+73hhkpz54qh=u+!=o9913m!#)*c6t3c)13c$sej0=u)'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG","False").lower() == "true"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -91,6 +92,14 @@ DATABASES = {
     }
 }
 
+import dj_database_url
+
+database_url = os.environ.get("DATABASE_URL")
+DATABASES["default"] = dj_database_url.parse(
+    database_url
+)
+
+# postgresql://quiz_app_DB_owner:npg_TfjY1poDL4wn@ep-frosty-band-a80sti3a-pooler.eastus2.azure.neon.tech/quiz_app_DB?sslmode=require
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -133,7 +142,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.CustomUser'  
-
 
 
 REST_FRAMEWORK = {
