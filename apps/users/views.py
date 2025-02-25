@@ -55,7 +55,7 @@ class LoginAPIView(generics.GenericAPIView):
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
     
-    
+#todo update logout after adding refresh token    
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

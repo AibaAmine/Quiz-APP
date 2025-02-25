@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +28,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost 127.0.0.1").split()
 
 
 # Application definition
@@ -82,23 +85,38 @@ WSGI_APPLICATION = "QuizApp.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "quiz_app_DB",
-        "USER": "postgres",
-        "PASSWORD": "password",
-        "HOST": "localhost",  # Or your DB server IP
-        "PORT": "5432",  # Default PostgreSQL port
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "quiz_app_DB",
+#         "USER": "postgres",
+#         "PASSWORD": "password",
+#         "HOST": "localhost",  # Or your DB server IP
+#         "PORT": "5432",  # Default PostgreSQL port
+#     }
+# }
 
 import dj_database_url
 
 database_url = os.environ.get("DATABASE_URL")
-DATABASES["default"] = dj_database_url.parse(database_url)
 
-# postgresql://quiz_app_DB_owner:npg_TfjY1poDL4wn@ep-frosty-band-a80sti3a-pooler.eastus2.azure.neon.tech/quiz_app_DB?sslmode=require
+if database_url:
+    DATABASES = {"default": dj_database_url.parse(database_url)}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+            "HOST": os.getenv("DB_HOST"),
+            "PORT": os.getenv("DB_PORT"),
+        }
+    }
+
+
+# DATABASES["default"] = dj_database_url.parse(database_url)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -158,8 +176,40 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1000),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=int(os.getenv("ACCESS_TOKEN_LIFETIME"))
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=int(os.getenv("REFRESH_TOKEN_LIFETIME"))
+    ),
+    "ROTATE_REFRESH_TOKENS": os.getenv("ROTATE_REFRESH_TOKENS").lower()
+    == "true",
+    "BLACKLIST_AFTER_ROTATION": os.getenv("BLACKLIST_AFTER_ROTATION").lower()
+    == "true",
 }
+
+
+# Add Cloudinary settings
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+}
+
+# Tell Django to use Cloudinary for media files
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+
+
+# SWAGGER_SETTINGS = {
+#     'DEFAULT_FIELD_INSPECTORS': [
+#         'drf_yasg.inspectors.CamelCaseJSONFilter',
+#         'drf_yasg.inspectors.InlineSerializerInspector',
+#         'drf_yasg.inspectors.RelatedFieldInspector',
+#         'drf_yasg.inspectors.ChoiceFieldInspector',
+#         'drf_yasg.inspectors.FileFieldInspector',
+#         'drf_yasg.inspectors.DictFieldInspector',
+#         'drf_yasg.inspectors.SimpleFieldInspector',
+#         'drf_yasg.inspectors.StringDefaultFieldInspector',
+#     ],
+# }
