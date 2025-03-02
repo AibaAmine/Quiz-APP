@@ -1,3 +1,4 @@
+from apps.quizzes.filters import QuizFilter
 from apps.quizzes.serializers import (
     QuizReadSerializer,
     QuizCreateSerializer,
@@ -6,7 +7,7 @@ from apps.quizzes.serializers import (
 from rest_framework import views
 from rest_framework import generics
 from apps.quizzes.models import Quiz
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,11 +15,18 @@ from rest_framework import status
 
 # Create your views here.
 
+class ListAllQuizzesAPIView(generics.ListAPIView):
+    serializer_class= QuizReadSerializer
+    permission_classes = [AllowAny]
+    queryset = Quiz.objects.all()
+    filterset_class = QuizFilter
+    
 
 # api view to list quizzes of the authenticated user
 class ListQuizzesAPIView(generics.ListAPIView):
     serializer_class = QuizReadSerializer
     permission_classes = [IsAuthenticated]
+    #filterset_fields = ("title","category")
 
     def get_queryset(self):
         user = self.request.user

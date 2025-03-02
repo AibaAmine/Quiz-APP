@@ -31,13 +31,13 @@ class QuizCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        questions_json = validated_data.pop("questions", "[]") 
+        questions_json = validated_data.pop("questions", "[]")
 
-        print(f"Raw Questions Data: {questions_json}")  
+        print(f"Raw Questions Data: {questions_json}")
 
         try:
             questions_data = json.loads(questions_json)  # Convert JSON string to list
-            print(f"Parsed Questions Data: {questions_data}")  
+            print(f"Parsed Questions Data: {questions_data}")
         except json.JSONDecodeError:
             raise serializers.ValidationError({"questions": "Invalid JSON format."})
 
@@ -84,11 +84,9 @@ class QuizUpdateSerializer(serializers.ModelSerializer):
         fields = "__all__"
         extra_kwargs = {"user": {"required": False}}  # Make 'user' optional
 
-
     def update(self, instance, validated_data):
         questions_json = validated_data.pop("questions", None)
         validated_data.pop("user", None)  # Remove 'user' if present in request
-
 
         if questions_json:
             try:
@@ -96,7 +94,7 @@ class QuizUpdateSerializer(serializers.ModelSerializer):
             except json.JSONDecodeError:
                 raise serializers.ValidationError({"questions": "Invalid JSON format."})
 
-            # Delete old questions 
+            # Delete old questions
             instance.questions.all().delete()
 
             # Add new questions and answers

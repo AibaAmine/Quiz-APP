@@ -87,3 +87,5 @@ class DislikesForQuizAPIView(APIView):
         
         dislikes_count = Dislike.objects.filter(user = user,quiz = quiz).count()
         return Response({"dislikes_count : " : dislikes_count},status=200)
+    
+    
