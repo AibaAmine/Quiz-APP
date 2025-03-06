@@ -7,26 +7,47 @@ from apps.quizzes.serializers import (
 from rest_framework import views
 from rest_framework import generics
 from apps.quizzes.models import Quiz
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Count
 
 
 # Create your views here.
 
+
 class ListAllQuizzesAPIView(generics.ListAPIView):
-    serializer_class= QuizReadSerializer
-    permission_classes = [AllowAny]
-    queryset = Quiz.objects.all()
+    serializer_class = QuizReadSerializer
+    permission_classes = [IsAuthenticated]
     filterset_class = QuizFilter
-    
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
+    search_fields = ["title", "user__username"]
+    # search_fields = ["=title", "user__username"] # "=" is for exact match from the search
+    ordering_fields = [
+        "created_at",
+        "-created_at",
+        "-likes_count",
+    ]  # "-" is for des order
+    ordering = ["-created_at"]#default ordering
+
+    def get_queryset(self):
+        return Quiz.objects.annotate(
+            likes_count=Count("likes")
+        )  # adding likes_count to each Quiz instance in the queryset
+
 
 # api view to list quizzes of the authenticated user
 class ListQuizzesAPIView(generics.ListAPIView):
     serializer_class = QuizReadSerializer
     permission_classes = [IsAuthenticated]
-    #filterset_fields = ("title","category")
+    # filterset_fields = ("title","category")
 
     def get_queryset(self):
         user = self.request.user
